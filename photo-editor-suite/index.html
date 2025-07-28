@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhotoStudio - Professional Photo Editor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header__logo">
+            <h1>PhotoStudio</h1>
+        </div>
+        <nav class="header__nav">
+            <button class="btn btn--secondary" id="openFile">Open</button>
+            <button class="btn btn--secondary" id="saveFile">Save</button>
+            <button class="btn btn--secondary" id="exportFile">Export</button>
+            <button class="btn btn--secondary" id="undoBtn">Undo</button>
+            <button class="btn btn--secondary" id="redoBtn">Redo</button>
+        </nav>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="layout">
+        <!-- Left Sidebar - Tools -->
+        <aside class="sidebar sidebar--left">
+            <div class="sidebar__section">
+                <h3 class="sidebar__title">Tools</h3>
+                <div class="tool-palette">
+                    <button class="tool-btn active" data-tool="select" title="Select Tool">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/>
+                        </svg>
+                    </button>
+                    <button class="tool-btn" data-tool="crop" title="Crop Tool">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6.13 1L6 16a2 2 0 0 0 2 2h15"/>
+                            <path d="M1 6.13L16 6a2 2 0 0 1 2 2v15"/>
+                        </svg>
+                    </button>
+                    <button class="tool-btn" data-tool="rotate" title="Rotate Tool">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21.5 2v6h-6M2.5 22v-6h6"/>
+                            <path d="M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/>
+                        </svg>
+                    </button>
+                    <button class="tool-btn" data-tool="brush" title="Brush Tool">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/>
+                            <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>
+                        </svg>
+                    </button>
+                    <button class="tool-btn" data-tool="text" title="Text Tool">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="4 7 4 4 20 4 20 7"/>
+                            <line x1="9" y1="20" x2="15" y2="20"/>
+                            <line x1="12" y1="4" x2="12" y2="20"/>
+                        </svg>
+                    </button>
+                    <button class="tool-btn" data-tool="zoom" title="Zoom Tool">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                            <line x1="11" y1="8" x2="11" y2="14"/>
+                            <line x1="8" y1="11" x2="14" y2="11"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Canvas Area -->
+        <main class="canvas-area">
+            <div class="canvas-container" id="canvasContainer">
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone__content">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        <h3>Drop your image here</h3>
+                        <p>or <button class="btn btn--primary" id="browseFile">browse files</button></p>
+                        <p class="drop-zone__formats">Supports: JPEG, PNG, WebP, GIF</p>
+                    </div>
+                </div>
+                <canvas id="mainCanvas" class="main-canvas hidden"></canvas>
+            </div>
+            
+            <!-- Zoom Controls -->
+            <div class="zoom-controls">
+                <button class="btn btn--sm" id="zoomOut">-</button>
+                <span id="zoomLevel">100%</span>
+                <button class="btn btn--sm" id="zoomIn">+</button>
+                <button class="btn btn--sm" id="fitToScreen">Fit</button>
+            </div>
+        </main>
+
+        <!-- Right Sidebar - Properties -->
+        <aside class="sidebar sidebar--right">
+            <!-- Adjustments Panel -->
+            <div class="sidebar__section">
+                <h3 class="sidebar__title">Adjustments</h3>
+                <div class="adjustment-controls">
+                    <div class="adjustment-item">
+                        <label for="brightness">Brightness</label>
+                        <input type="range" id="brightness" min="-100" max="100" value="0" class="slider">
+                        <span class="adjustment-value">0</span>
+                    </div>
+                    <div class="adjustment-item">
+                        <label for="contrast">Contrast</label>
+                        <input type="range" id="contrast" min="-100" max="100" value="0" class="slider">
+                        <span class="adjustment-value">0</span>
+                    </div>
+                    <div class="adjustment-item">
+                        <label for="saturation">Saturation</label>
+                        <input type="range" id="saturation" min="-100" max="100" value="0" class="slider">
+                        <span class="adjustment-value">0</span>
+                    </div>
+                    <div class="adjustment-item">
+                        <label for="hue">Hue</label>
+                        <input type="range" id="hue" min="-180" max="180" value="0" class="slider">
+                        <span class="adjustment-value">0</span>
+                    </div>
+                    <div class="adjustment-item">
+                        <label for="temperature">Temperature</label>
+                        <input type="range" id="temperature" min="-100" max="100" value="0" class="slider">
+                        <span class="adjustment-value">0</span>
+                    </div>
+                    <div class="adjustment-item">
+                        <label for="vibrance">Vibrance</label>
+                        <input type="range" id="vibrance" min="-100" max="100" value="0" class="slider">
+                        <span class="adjustment-value">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters Panel -->
+            <div class="sidebar__section">
+                <h3 class="sidebar__title">Filters</h3>
+                <div class="filter-grid">
+                    <button class="filter-btn" data-filter="none">Original</button>
+                    <button class="filter-btn" data-filter="grayscale">Grayscale</button>
+                    <button class="filter-btn" data-filter="sepia">Sepia</button>
+                    <button class="filter-btn" data-filter="blur">Blur</button>
+                    <button class="filter-btn" data-filter="sharpen">Sharpen</button>
+                    <button class="filter-btn" data-filter="vintage">Vintage</button>
+                    <button class="filter-btn" data-filter="cool">Cool</button>
+                    <button class="filter-btn" data-filter="warm">Warm</button>
+                </div>
+            </div>
+
+            <!-- Layers Panel -->
+            <div class="sidebar__section">
+                <h3 class="sidebar__title">Layers</h3>
+                <div class="layers-list">
+                    <div class="layer-item active">
+                        <span class="layer-name">Background</span>
+                        <span class="layer-opacity">100%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Panel -->
+            <div class="sidebar__section">
+                <h3 class="sidebar__title">History</h3>
+                <div class="history-list" id="historyList">
+                    <div class="history-item">Initial State</div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Status Bar -->
+    <footer class="status-bar">
+        <div class="status-info">
+            <span id="imageInfo">No image loaded</span>
+        </div>
+        <div class="status-actions">
+            <span id="statusMessage">Ready</span>
+        </div>
+    </footer>
+
+    <!-- Export Modal -->
+    <div class="modal hidden" id="exportModal">
+        <div class="modal__backdrop"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h3>Export Image</h3>
+                <button class="modal__close" id="closeExportModal">×</button>
+            </div>
+            <div class="modal__body">
+                <div class="form-group">
+                    <label class="form-label">Format</label>
+                    <select class="form-control" id="exportFormat">
+                        <option value="jpeg">JPEG</option>
+                        <option value="png">PNG</option>
+                        <option value="webp">WebP</option>
+                    </select>
+                </div>
+                <div class="form-group" id="qualityGroup">
+                    <label class="form-label">Quality</label>
+                    <input type="range" class="form-control" id="exportQuality" min="0.1" max="1" step="0.1" value="0.9">
+                    <span id="qualityValue">90%</span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Filename</label>
+                    <input type="text" class="form-control" id="exportFilename" value="edited-image">
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button class="btn btn--secondary" id="cancelExport">Cancel</button>
+                <button class="btn btn--primary" id="confirmExport">Export</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden File Input -->
+    <input type="file" id="fileInput" accept="image/*" class="hidden">
+
+    <script src="app.js"></script>
+</body>
+</html>
